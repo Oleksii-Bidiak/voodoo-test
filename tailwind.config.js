@@ -4,6 +4,9 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateColumns: {
+        1: "repeat(1, minmax(180px, 1fr))",
+        2: "repeat(2, minmax(180px, 1fr))",
+        3: "repeat(3, minmax(180px, 1fr))",
         4: "repeat(4, minmax(180px, 1fr))",
       },
       fontFamily: {
