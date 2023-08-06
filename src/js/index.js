@@ -1,7 +1,7 @@
-const fetching = async (page, limit) => {
+const fetching = async () => {
   try {
     const response = await fetch(
-      `https://voodoo-sandbox.myshopify.com/products.json?page=${page}&limit=${limit}`
+      `https://voodoo-sandbox.myshopify.com/products.json`
     );
 
     if (!response.ok) {
@@ -9,7 +9,7 @@ const fetching = async (page, limit) => {
     }
 
     const data = await response.json();
-    console.log(data.products);
+    console.log(data.products.length);
     return data.products;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -17,11 +17,12 @@ const fetching = async (page, limit) => {
 };
 
 window.onload = () => {
-  const page = 1;
-  const limit = 24;
+  let page = 1;
+  let limit = 24;
 
   const addCards = async (page, limit) => {
-    const products = await fetching(page, limit);
+    const products = await fetching();
+    // const products = await fetching(page, limit);
     const cardsBody = document.getElementById("cardsBody");
 
     for (let i = 0; i < products.length; i++) {
@@ -61,6 +62,10 @@ window.onload = () => {
       cardsBody.insertAdjacentHTML("beforeend", card);
     }
   };
+
+  const paggination = () => {
+
+  }
 
   addCards(page, limit);
 };
