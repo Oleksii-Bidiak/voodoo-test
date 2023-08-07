@@ -829,6 +829,10 @@ video {
   flex-grow: 1;
 }
 
+.basis-\[39px\] {
+  flex-basis: 39px;
+}
+
 .table-auto {
   table-layout: auto;
 }
@@ -1350,6 +1354,10 @@ video {
 .gap-x-\[48px\] {
   -moz-column-gap: 48px;
        column-gap: 48px;
+}
+
+.gap-y-\[10px\] {
+  row-gap: 10px;
 }
 
 .gap-y-\[12px\] {

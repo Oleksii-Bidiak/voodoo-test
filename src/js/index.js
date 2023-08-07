@@ -1,7 +1,7 @@
-const fetching = async () => {
+const fetching = async (pageNumber, limit) => {
   try {
     const response = await fetch(
-      `https://voodoo-sandbox.myshopify.com/products.json`
+      `https://voodoo-sandbox.myshopify.com/products.json?limit=${limit}&page=${pageNumber}`
     );
 
     if (!response.ok) {
@@ -9,7 +9,6 @@ const fetching = async () => {
     }
 
     const data = await response.json();
-    console.log(data.products.length);
     return data.products;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -17,18 +16,52 @@ const fetching = async () => {
 };
 
 window.onload = () => {
-  let page = 1;
-  let limit = 24;
+  const totalPages = 20;
+  const itemsPerPage = 24;
+  let currentPage = 1;
 
-  const addCards = async (page, limit) => {
-    const products = await fetching();
-    // const products = await fetching(page, limit);
-    const cardsBody = document.getElementById("cardsBody");
+  const buttonClasses = [
+    "h-[39px]",
+    "w-[39px]",
+    "basis-[39px]",
+    "flex",
+    "justify-center",
+    "items-center",
+    "border",
+    "border-black",
+    "rounded-full",
+    "transition-all",
+    "duration-200",
+    "ease-linear",
+    "cursor-pointer",
+  ];
 
-    for (let i = 0; i < products.length; i++) {
-      const imageSrc = products[i]?.images[0]?.src;
-      const title = products[i].title;
-      const price = products[i].variants[0].price;
+  const notActiveButtonClasses = [
+    "bg-black",
+    "text-white",
+    "hover:bg-white",
+    "hover:text-black",
+  ];
+
+  const activeButtonClasses = [
+    "hover:bg-black",
+    "hover:text-white",
+    "bg-white",
+    "text-black",
+  ];
+
+  const cardsBody = document.getElementById("cardsBody");
+  const paginationButtonsContainer =
+    document.getElementById("paginationButtons");
+
+  const showPage = async (pageNumber, button = 0) => {
+
+    const products = await fetching(pageNumber, itemsPerPage);
+    cardsBody.innerHTML = "";
+    products.forEach((item) => {
+      const imageSrc = item.images[0]?.src;
+      const title = item.title;
+      const price = item.variants[0].price;
 
       const card = `
 			<article class="flex flex-col gap-y-[12px]">
@@ -60,12 +93,46 @@ window.onload = () => {
 		`;
 
       cardsBody.insertAdjacentHTML("beforeend", card);
-    }
+    });
+    setTimeout(() => {
+      currentPage = pageNumber;
+    }, 0);
+
+    // Затримка перед оновленням стилів неактивних кнопок
+    setTimeout(() => {
+      const buttons = Array.from(paginationButtonsContainer.children);
+      buttons.forEach((btn, index) => {
+        if (index + 1 !== pageNumber) {
+          btn.classList.remove(...activeButtonClasses);
+          btn.classList.add(...notActiveButtonClasses);
+        }
+        if (index + 1 === pageNumber) {
+          btn.classList.add(...activeButtonClasses);
+          btn.classList.remove(...notActiveButtonClasses);
+        }
+      });
+    }, 50);
+    //  window.scrollTo(0, 0);
   };
 
-  const paggination = () => {
+  function generatePaginationButtons() {
+    for (let i = 1; i <= totalPages; i++) {
+		
+      const button = document.createElement("button");
+      button.classList.add(...buttonClasses);
 
+      if (i === currentPage) {
+        button.classList.add(...activeButtonClasses);
+      } else {
+        button.classList.add(...notActiveButtonClasses);
+      }
+
+      button.innerHTML = i;
+      button.addEventListener("click", () => showPage(i, button));
+      paginationButtonsContainer.appendChild(button);
+    }
   }
 
-  addCards(page, limit);
+  generatePaginationButtons();
+  showPage(1);
 };
